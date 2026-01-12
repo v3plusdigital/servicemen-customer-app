@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:servicemen_customer_app/custom_widgets/app_image_widget.dart';
 import 'package:servicemen_customer_app/custom_widgets/custom_button.dart';
+import 'package:servicemen_customer_app/providers/location_provider.dart';
 import 'package:servicemen_customer_app/utils/app_images.dart';
 import 'package:servicemen_customer_app/utils/app_routes.dart';
 import 'package:servicemen_customer_app/utils/app_textstyles.dart';
@@ -13,20 +14,66 @@ import 'package:servicemen_customer_app/views/auth/widgets/otp_fields_widget.dar
 import '../../custom_widgets/custom_appbar.dart';
 import '../../providers/auth_provider.dart';
 
-class OtpVerificationScreen extends StatelessWidget {
+class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key});
 
   @override
+  State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
+}
+
+class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: CustomAppBar(
         context: context,
         title: context.l10n.verificationCode,
       ),
+      bottomNavigationBar:  SafeArea(
+        child: Container(
+          padding: EdgeInsets.only(
+            left: 15,
+            right: 15,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+            top: 12,
+          ),
+          child: GradientButton(
+            child: Text(
+              context.l10n.verify,
+              style: AppTextStyles.sf16kWhiteMediumTextStyle,
+            ),
+            onPressed: () async {
+              final provider = context.read<AuthProvider>();
+
+              final cancel = BotToast.showLoading();
+
+              final success = await provider.verifyOtp();
+              context.read<LocationProvider>().getServiceArea();
+              cancel(); // ALWAYS close loading
+
+              if (success) {
+                // Navigator.pushNamed(context, AppRoutes.profileInformation);
+                if (provider.verifyOtpModel?.data?.isNewUser == true) {
+                  provider.clearProfileValue();
+                  await provider.getProfile(context).then((onValue){
+                    Navigator.pushNamed(context, AppRoutes.profileInformation);
+                  });
+
+                } else {
+                  Navigator.pushNamed(context, AppRoutes.home);
+                }
+              } else {
+                BotToast.showText(text: provider.errorMessage ?? "Error");
+              }
+            },
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: ListView(
+          // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 30),
 
@@ -59,7 +106,10 @@ class OtpVerificationScreen extends StatelessWidget {
                   ),
                   TextSpan(
                     text: context.l10n.change,
-                    recognizer: TapGestureRecognizer()..onTap = () {},
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.pop(context);
+                      },
                     style: AppTextStyles.sf16kPrimaryW400TextStyle.copyWith(
                       decoration: TextDecoration.underline,
                     ),
@@ -83,52 +133,59 @@ class OtpVerificationScreen extends StatelessWidget {
                   style: AppTextStyles.sf16kGreyW400TextStyle,
                 ),
                 SizedBox(height: 5),
-                GestureDetector(
-                  onTap: () {},
-                  child: Text(
-                    "${context.l10n.resendCode}",
-                    style: AppTextStyles.sf16kPrimaryW400TextStyle.copyWith(
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
+                Selector<AuthProvider, int>(
+                  selector: (_, p) => p.secondsLeft,
+                  builder: (_, seconds, __) {
+                    final min = seconds ~/ 60;
+                    final sec = seconds % 60;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: context.read<AuthProvider>().secondsLeft == 0
+                              ? () async {
+                                  final provider = context.read<AuthProvider>();
+
+                                  final cancel = BotToast.showLoading();
+
+                                  final success = await provider.requestOtp();
+
+                                  cancel(); // ALWAYS close loading
+
+                                  if (success) {
+                                    BotToast.showText(
+                                      text: "OTP sent successfully",
+                                    );
+                                  } else {
+                                    BotToast.showText(
+                                      text:
+                                          provider.errorMessage ??
+                                          "Something went wrong",
+                                    );
+                                  }
+                                }
+                              : null,
+                          child: Text(
+                            context.l10n.resendCode,
+                            style: context.read<AuthProvider>().secondsLeft != 0
+                                ? AppTextStyles.sf16kGreyW400TextStyle
+                                : AppTextStyles.sf16kPrimaryW400TextStyle
+                                      .copyWith(
+                                        decoration: TextDecoration.underline,
+                                      ),
+                          ),
+                        ),
+                        context.read<AuthProvider>().secondsLeft != 0? Text(
+                          " - ${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}",
+                          style: const TextStyle(fontSize: 16),
+                        ):Container(),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
 
-            const Spacer(),
-
-            GradientButton(
-              child: Text(
-                context.l10n.verify,
-                style: AppTextStyles.sf16kWhiteMediumTextStyle,
-              ),
-              onPressed: () async {
-                final provider = context.read<AuthProvider>();
-
-                final cancel = BotToast.showLoading();
-
-                final success = await provider.verifyOtp();
-
-                cancel(); // ALWAYS close loading
-
-                if (success) {
-                  if(provider.verifyOtpModel?.data?.isNewUser==true){
-                    Navigator.pushNamed(context, AppRoutes.profileInformation);
-                  }
-                  else{
-                    Navigator.pushNamed(context, AppRoutes.profileInformation);
-                  }
-
-
-
-                } else {
-                  BotToast.showText(
-                    text: provider.errorMessage ?? "Error",
-                  );
-                }
-                  },
-            ),
-            SizedBox(height: 25,)
           ],
         ),
       ),

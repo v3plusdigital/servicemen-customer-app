@@ -8,7 +8,6 @@ import 'package:flutter_svg/svg.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_images.dart';
 import '../utils/app_textstyles.dart';
-import 'app_image_widget.dart';
 import 'custom_text_widget.dart';
 
 PreferredSize CustomAppBar({
@@ -44,15 +43,37 @@ PreferredSize CustomAppBar({
         centerTitle: false,
         automaticallyImplyLeading: leading ?? false,
         leading: leading == true && leadingWidget == null
-            ? GestureDetector(
-                child: Padding(
-                  padding: EdgeInsets.all(19),
-                  child: SvgPicture.asset(AppImages.arrowBackwardIcon),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
+            ? IconButton(
+                onPressed: () {
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  } else {
+                    if (Platform.isAndroid) {
+                      SystemNavigator.pop(); // exit app
+                    }
+                  }
                 },
+                icon: SvgPicture.asset(
+                  AppImages.arrowBackwardIcon,
+                  width: 15,
+                  height: 15,
+                ),
               )
+            // GestureDetector(
+            //         child: Padding(
+            //           padding: EdgeInsets.all(19),
+            //           child: SvgPicture.asset(AppImages.arrowBackwardIcon),
+            //         ),
+            //         onTap: () {
+            //           if (Navigator.canPop(context)) {
+            //             Navigator.pop(context);
+            //           } else {
+            //             if (Platform.isAndroid) {
+            //               SystemNavigator.pop(); // exit app
+            //             }
+            //           }
+            //         },
+            //       )
             : leadingWidget,
         titleSpacing: leading == false ? 15 : 0,
         title:

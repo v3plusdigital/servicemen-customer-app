@@ -7,11 +7,14 @@ import 'package:servicemen_customer_app/providers/dashboard_provider.dart';
 import 'package:servicemen_customer_app/views/address/address_list_screen.dart';
 import 'package:servicemen_customer_app/views/auth/otp_verification_screen.dart';
 import 'package:servicemen_customer_app/views/auth/profile_information_screen.dart';
+import 'package:servicemen_customer_app/views/auth/splash_screen.dart';
 import 'package:servicemen_customer_app/views/bookings/booking_details_screen.dart';
 import 'package:servicemen_customer_app/views/bookings/booking_screen.dart';
 import 'package:servicemen_customer_app/views/dashboard/cart_screen.dart';
 import 'package:servicemen_customer_app/views/dashboard/home_screen.dart';
 import 'package:servicemen_customer_app/views/dashboard/order_summary_screen.dart';
+import 'package:servicemen_customer_app/views/account/language_selection_screen.dart';
+import 'package:servicemen_customer_app/views/notifications/notification_screen.dart';
 
 import '../providers/onboarding_provider.dart';
 import '../views/address/choose_address_screen.dart';
@@ -20,6 +23,7 @@ import '../views/auth/onboarding_screen.dart';
 import '../views/dashboard/services_product_list_screen.dart';
 
 class AppRoutes {
+  static const String splash = '/Splash';
   static const String onBoarding = '/onBoarding';
   static const String login = '/login';
   static const String home = '/home';
@@ -32,18 +36,17 @@ class AppRoutes {
   static const String cart = '/cart';
   static const String booking = '/booking';
   static const String bookingDetails = '/bookingDetails';
+  static const String languageSelection = '/languageSelection';
+  static const String notifications = '/notifications';
 
   static String initialRoute() {
-    return onBoarding;
+    return splash;
   }
 
-  // static String initialRoute(AuthViewModel authVM) {
-  //   if (!authVM.isFirstLaunch) return home;
-  //   if (!authVM.isLoggedIn) return login;
-  //   return walkthrough;
-  // }
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case splash:
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
       case onBoarding:
         return MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider(
@@ -60,7 +63,7 @@ class AppRoutes {
 
       case profileInformation:
         return MaterialPageRoute(
-          builder: (_) => const ProfileInformationScreen(),
+          builder: (_) =>  ProfileInformationScreen(),
         );
       case chooseAddress:
         return MaterialPageRoute(builder: (_) => const ChooseAddressScreen());
@@ -68,17 +71,19 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) => MultiProvider(
             providers: [
-              ChangeNotifierProvider(create: (_) => DashboardProvider()),
-              ChangeNotifierProvider(create: (_) => BookingProvider()),
+               ChangeNotifierProvider(create: (_) => BookingProvider()),
             ],
             child: const HomeScreen(),
           ),
         );
       case serviceProductsList:
+        final dashboardProvider = settings.arguments as DashboardProvider;
         return MaterialPageRoute(
-          builder: (_) => const ServicesProductListScreen(),
+          builder: (_) => ChangeNotifierProvider.value(
+            value: dashboardProvider,
+            child: const ServicesProductListScreen(),
+          ),
         );
-
       case orderSummary:
         return MaterialPageRoute(builder: (_) => OrderSummaryScreen());
       case addressList:
@@ -87,6 +92,10 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => CartScreen());
       case bookingDetails:
         return MaterialPageRoute(builder: (_) => BookingDetailsScreen());
+      case languageSelection:
+        return MaterialPageRoute(builder: (_) => const LanguageSelectionScreen());
+      case notifications:
+        return MaterialPageRoute(builder: (_) => const NotificationScreen());
 
       default:
         return MaterialPageRoute(

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:servicemen_customer_app/custom_widgets/custom_text_field.dart';
+import 'package:servicemen_customer_app/models/get_order_summary_model.dart';
+import 'package:servicemen_customer_app/models/service_view_state.dart';
+import 'package:servicemen_customer_app/models/services_response_model.dart';
 import 'package:servicemen_customer_app/providers/cart_provider.dart';
+import 'package:servicemen_customer_app/providers/dashboard_provider.dart';
 import 'package:servicemen_customer_app/utils/app_routes.dart';
 import 'package:servicemen_customer_app/utils/build_extention.dart';
 import 'package:servicemen_customer_app/views/dashboard/widgets/horizontal_calendar_widget.dart';
@@ -21,28 +25,46 @@ class OrderSummaryScreen extends StatelessWidget {
       appBar: CustomAppBar(context: context, title: context.l10n.orderSummary),
       bottomNavigationBar: buildProceedToOrder(context),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListView.separated(
-              itemCount: 2,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.only(top: 15, left: 15, right: 15),
-              separatorBuilder: (context, i) => SizedBox(height: 17),
-              itemBuilder: (context, i) {
-                return ProductCardsWidget(serviceId: i, orderSummary: true);
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: Divider(color: AppColors.kGrey4, thickness: 10),
-            ),
-            buildPaymentSummary(context),
-            addProblemDescription(context),
-            serviceLocation(context),
-            technicianArrival(context),
-          ],
+        child: Selector<CartProvider, GetOrderSummaryModel?>(
+          selector: (_, p) => p.getOrderSummaryModel,
+          builder: (_, order, __) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListView.separated(
+                  itemCount: order?.data?.cart?.items?.length ?? 0,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(top: 15, left: 15, right: 15),
+                  separatorBuilder: (context, i) => SizedBox(height: 17),
+                  itemBuilder: (context, i) {
+                    return ProductCardsWidget(
+                      orderSummary: true,
+                      service: Service(
+                        id: order?.data?.cart?.items?[i].serviceId,
+                        name: order?.data?.cart?.items?[i].serviceName,
+                        price: order?.data?.cart?.items?[i].servicePrice
+                            .toString(),
+                        shortDescription: order?.data?.cart?.serviceTypeName,
+                        description: "",
+                        image: order?.data?.cart?.items?[i].serviceImage,
+                        thumbnail:
+                            order?.data?.cart?.items?[i].serviceImageThumb,
+                      ),
+                    );
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  child: Divider(color: AppColors.kGrey4, thickness: 10),
+                ),
+                buildPaymentSummary(context),
+                addProblemDescription(context),
+                serviceLocation(context),
+                technicianArrival(context),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -137,7 +159,7 @@ class OrderSummaryScreen extends StatelessWidget {
                 style: AppTextStyles.sf20kBlackSemiboldTextStyle,
               ),
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   Navigator.pushNamed(context, AppRoutes.addressList);
                 },
                 child: Text(
@@ -196,12 +218,12 @@ class OrderSummaryScreen extends StatelessWidget {
               debugPrint("Selected date: $date");
             },
           ),
-          SizedBox(height: 15,),
+          SizedBox(height: 15),
           Text(
             context.l10n.selectSlot,
             style: AppTextStyles.sf16kBlackW400TextStyle,
           ),
-          SizedBox(height: 12,),
+          SizedBox(height: 12),
           LayoutBuilder(
             builder: (context, constraints) {
               const itemsPerRow = 4;
@@ -253,61 +275,61 @@ class OrderSummaryScreen extends StatelessWidget {
 
   Widget buildProceedToOrder(BuildContext context) {
     final hasItems = context.select<CartProvider, bool>(
-          (p) => p.quantities.isNotEmpty,
+      (p) => p.quantities.isNotEmpty,
     );
     return hasItems
         ? SafeArea(
-      child: Container(
-        height: 80,
-        width: context.width,
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        decoration: BoxDecoration(
-          color: AppColors.kWhite,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 8,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            /// Total price
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.l10n.totalPayment,
-                  style: AppTextStyles.sf14kGreyW400TextStyle,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "₹ 599",
-                  style: AppTextStyles.sf20kBlackSemiboldTextStyle,
-                ),
-              ],
-            ),
-            SizedBox(width: 15),
+            child: Container(
+              height: 80,
+              width: context.width,
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: AppColors.kWhite,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 8,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  /// Total price
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.l10n.totalPayment,
+                        style: AppTextStyles.sf14kGreyW400TextStyle,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "₹ 599",
+                        style: AppTextStyles.sf20kBlackSemiboldTextStyle,
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 15),
 
-            /// Proceed Button
-            Expanded(
-              child: GradientButton(
-                child: Text(
-                  context.l10n.proceedToPayment,
-                  style: AppTextStyles.sf16kWhiteMediumTextStyle,
-                ),
-                onPressed: () {
-                  // Navigator.pushNamed(context, AppRoutes.orderSummary);
-                },
+                  /// Proceed Button
+                  Expanded(
+                    child: GradientButton(
+                      child: Text(
+                        context.l10n.proceedToPayment,
+                        style: AppTextStyles.sf16kWhiteMediumTextStyle,
+                      ),
+                      onPressed: () {
+                        // Navigator.pushNamed(context, AppRoutes.orderSummary);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    )
+          )
         : Container(height: 1);
   }
 }

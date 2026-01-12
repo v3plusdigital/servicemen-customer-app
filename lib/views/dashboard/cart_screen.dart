@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:servicemen_customer_app/models/get_cart_model.dart';
+import 'package:servicemen_customer_app/providers/cart_provider.dart';
 import 'package:servicemen_customer_app/utils/app_colors.dart';
 import 'package:servicemen_customer_app/utils/app_routes.dart';
 
@@ -16,26 +19,31 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(context: context, title: context.l10n.cart),
-      body: ListView.builder(
-        itemCount: 2,
-        shrinkWrap: true,
-        itemBuilder: (context, i) {
-          return Container(
-            padding: EdgeInsets.all(15),
-            child: Column(
-              children: [
-                buildServiceItems(context),
-                SizedBox(height: 15),
-                buildButtons(context),
-              ],
-            ),
+      body: Selector<CartProvider, GetCartModel?>(
+        selector: (_, p) => p.getCartModel,
+        builder: (_, cartModel, __) {
+          return ListView.builder(
+            itemCount: cartModel?.data?.carts?.length ?? 0,
+            shrinkWrap: true,
+            itemBuilder: (context, i) {
+              return Container(
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    buildServiceItems(context, cartModel!.data!.carts![i]),
+                    SizedBox(height: 15),
+                    buildButtons(context, cartModel!.data!.carts![i].id ?? 0),
+                  ],
+                ),
+              );
+            },
           );
         },
       ),
     );
   }
 
-  Widget buildServiceItems(BuildContext context) {
+  Widget buildServiceItems(BuildContext context, Cart cart) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -50,7 +58,8 @@ class CartScreen extends StatelessWidget {
           child: Center(
             child: AppImageWidget().customNetworkImage(
               radius: 0,
-              image: AppImages.categoryPlaceholderImage,
+              image: cart.serviceTypeImageThumb ?? "",
+              // AppImages.categoryPlaceholderImage,
             ),
           ),
         ),
@@ -63,10 +72,13 @@ class CartScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "AC Service & Repair",
+                    cart.serviceTypeName ?? "",
                     style: AppTextStyles.sf16kBlackW500TextStyle,
                   ),
-                  Text("₹ 599", style: AppTextStyles.sf16kBlackW600TextStyle),
+                  Text(
+                    "₹ ${cart.totalAmount}",
+                    style: AppTextStyles.sf16kBlackW600TextStyle,
+                  ),
                 ],
               ),
               Row(
@@ -76,18 +88,33 @@ class CartScreen extends StatelessWidget {
                     width: context.wp(0.5),
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 2,
+                      itemCount: cart.items?.length ?? 0,
                       physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, i) => Text(
-                        "1x Foam Service",
+                      itemBuilder: (context, a) => Text(
+                        "${cart.items![a].quantity}x ${cart.items![a].serviceName}",
                         style: AppTextStyles.sf14kGreyW400TextStyle,
                       ),
                     ),
                   ),
-                  AppImageWidget().svgImage(
-                    imageName: AppImages.deleteIcon,
-                    height: 20,
-                    width: 20,
+                  GestureDetector(
+                    onTap: () {
+                      context.read<CartProvider>().deleteCart(
+                        context,
+                        cart.id!,
+                      );
+                    },
+                    child: Container(
+                      height: 30,
+                      width: 30,
+
+                      child: Center(
+                        child: AppImageWidget().svgImage(
+                          imageName: AppImages.deleteIcon,
+                          height: 20,
+                          width: 20,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -98,7 +125,7 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  Widget buildButtons(BuildContext context) {
+  Widget buildButtons(BuildContext context, int cartId) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -111,9 +138,7 @@ class CartScreen extends StatelessWidget {
               context.l10n.addServices,
               style: AppTextStyles.sf16kPrimaryColorMediumTextStyle,
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () {},
           ),
         ),
         SizedBox(
@@ -124,7 +149,13 @@ class CartScreen extends StatelessWidget {
               style: AppTextStyles.sf16kWhiteMediumTextStyle,
             ),
             onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.orderSummary);
+              context
+                  .read<CartProvider>()
+                  .getOrderSummary(context, cartId)
+                  .then(
+                    (onValue) =>
+                        Navigator.pushNamed(context, AppRoutes.orderSummary),
+                  );
             },
           ),
         ),

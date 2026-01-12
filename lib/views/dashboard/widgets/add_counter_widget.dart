@@ -20,7 +20,7 @@ class AddCounterWidget extends StatelessWidget {
       builder: (_, qty, __) {
         if (qty == 0) {
           return CustomOutlineButton(
-            height: 38,
+            height: 35,
             borderRadius: BorderRadius.circular(8),
             color: AppColors.kGrey1,
             child: Text(

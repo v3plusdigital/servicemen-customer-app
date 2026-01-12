@@ -12,6 +12,7 @@ import '../../../models/booking_view_model.dart';
 import '../../../utils/app_textstyles.dart';
 import '../../../utils/build_extention.dart';
 import '../booking_details_screen.dart';
+import 'add_rating_widget.dart';
 
 class BookingCardWidget extends StatelessWidget {
   final Booking booking;
@@ -200,7 +201,13 @@ class BookingCardWidget extends StatelessWidget {
                         context.l10n.addRatting,
                         style: AppTextStyles.sf14kPrimaryW500TextStyle,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        openSheet(
+                          context,
+                          booking,
+                          AddRatingWidget(booking: booking),
+                        );
+                      },
                     ),
                   ),
                   SizedBox(
@@ -287,6 +294,19 @@ class BookingCardWidget extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void openSheet(BuildContext context, Booking booking, Widget openSheet) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.kWhite,
+      builder: (_) => StatefulBuilder(
+        builder: (context, setState) {
+          return openSheet;
+        },
+      ),
     );
   }
 }

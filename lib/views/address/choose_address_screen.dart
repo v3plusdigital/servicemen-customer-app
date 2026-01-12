@@ -74,6 +74,7 @@ class ChooseAddressScreen extends StatelessWidget {
               style: AppTextStyles.sf16kPrimaryColorMediumTextStyle,
             ),
             onPressed: () {
+              context.read<LocationProvider>().clearFormValue();
               openAddAddressBottomSheet(context);
               // p.skipToEnd(p.onboardingData.length);
             },
@@ -95,7 +96,7 @@ class ChooseAddressScreen extends StatelessWidget {
                 style:AppTextStyles.sf20kBlackSemiboldTextStyle
               ),
             ),
-           AppImageWidget().svgImage(imageName: AppImages.closeIcon)
+          Container(width: 10,)
           ],
         );
       },
@@ -124,7 +125,7 @@ class ChooseAddressScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (_) => StatefulBuilder(
         builder: (context, setState) {
-          return const AddAddressBottomSheet();
+          return  AddAddressBottomSheet(fromDashboard: true);
         }
       ),
     );

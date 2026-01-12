@@ -6,6 +6,7 @@ class AppImages {
   ///icons
   static const addIcon = '${iconRoute}add.svg';
   static const bookingIcon = '${iconRoute}booking.svg';
+  static const homeIcon = '${iconRoute}home.svg';
   static const calendarIcon = '${iconRoute}calendar.svg';
   static const callIcon = '${iconRoute}call.svg';
   static const cameraIcon = '${iconRoute}camera.svg';
@@ -27,12 +28,14 @@ class AppImages {
   static const verifiedIcon = '${iconRoute}verified.svg';
   static const clockIcon = '${iconRoute}clock.svg';
   static const arrowBackwardIcon = '${iconRoute}arrow_backward.svg';
+  static const arrowForwardIcon = '${iconRoute}arrow_forward.svg';
   static const indianFlagIcon = '${iconRoute}indian_flag.svg';
   static const checkIcon = '${iconRoute}check_icon.svg';
 
 
   ///images
   static const logoImage = '${imageRoute}logo.png';
+  static const splashImage = '${imageRoute}splash.png';
   static const onboarding1Image = '${imageRoute}onboarding_1.png';
   static const onboarding2Image = '${imageRoute}onboarding_2.png';
   static const onboarding3Image = '${imageRoute}onboarding_3.png';

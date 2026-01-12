@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:servicemen_customer_app/custom_widgets/app_image_widget.dart';
 import 'package:servicemen_customer_app/custom_widgets/custom_text_field.dart';
 import 'package:servicemen_customer_app/custom_widgets/custom_text_widget.dart';
+import 'package:servicemen_customer_app/models/get_profile_model.dart';
 import 'package:servicemen_customer_app/utils/app_functions.dart';
 import 'package:servicemen_customer_app/utils/app_images.dart';
 import 'package:servicemen_customer_app/utils/app_textstyles.dart';
@@ -18,33 +20,76 @@ import '../../utils/app_routes.dart';
 import '../../utils/build_extention.dart';
 
 class ProfileInformationScreen extends StatelessWidget {
-  const ProfileInformationScreen({super.key});
+  ProfileInformationScreen({super.key});
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(context: context, title: context.l10n.profileSetup),
+      appBar: CustomAppBar(
+        context: context,
+        title: context.read<AuthProvider>().isUpdateProfile == true
+            ? context.l10n.personalInformation
+            : context.l10n.profileSetup,
+      ),
       body: Padding(
         padding: EdgeInsetsGeometry.symmetric(horizontal: 15, vertical: 10),
-        child: Column(
-          children: [
-            buildProfileImage(context),
-            buildName(context),
-            buildPhoneNumber(context),
-            buildEmail(context),
-            buildGender(context),
-            Spacer(),
-            GradientButton(
-              child: Text(
-                context.l10n.continueStr,
-                style: AppTextStyles.sf16kWhiteMediumTextStyle,
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              buildProfileImage(context),
+              buildName(context),
+              buildPhoneNumber(context),
+              buildEmail(context),
+              buildGender(context),
+              SizedBox(height: 60),
+              GradientButton(
+                child: Text(
+                  context.read<AuthProvider>().isUpdateProfile == true
+                      ? context.l10n.update
+                      : context.l10n.continueStr,
+                  style: AppTextStyles.sf16kWhiteMediumTextStyle,
+                ),
+                onPressed: () async {
+                  final provider = context.read<AuthProvider>();
+                  print(
+                    "_formKey.currentState!.validate()--" +
+                        _formKey.currentState!.validate().toString(),
+                  );
+                  if (!_formKey.currentState!.validate()) return;
+                  if (provider.gender == "") {
+                    BotToast.showText(text: "Please select gender");
+                    return;
+                  }
+                  final cancel = BotToast.showLoading();
+                  if (provider.isUpdateProfile == true) {
+                    final success = await provider.updateProfileApi(context);
+                    cancel(); // ALWAYS close loading
+                    if (success) {
+                      Navigator.pop(context);
+                      BotToast.showText(text: "Profile updated successfully");
+                      provider.getProfile(context);
+                      provider.updateProfile(true);
+                    } else {
+                      BotToast.showText(text: provider.errorMessage ?? "Error");
+                    }
+                  } else {
+                    final success = await provider.createProfile(context);
+                    cancel(); // ALWAYS close loading
+                    if (success) {
+                      Navigator.pushNamed(context, AppRoutes.home);
+                      // Navigator.pushNamed(context, AppRoutes.chooseAddress);
+                    } else {
+                      BotToast.showText(text: provider.errorMessage ?? "Error");
+                    }
+                  }
+                },
               ),
-              onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.chooseAddress);
-              },
-            ),
-            SizedBox(height: 25),
-          ],
+              SizedBox(height: 25),
+            ],
+          ),
         ),
       ),
     );
@@ -54,6 +99,7 @@ class ProfileInformationScreen extends StatelessWidget {
     final File? selectedImage = context.select<AuthProvider, File?>(
       (p) => p.image,
     );
+
     return SizedBox(
       width: context.width,
       child: Center(
@@ -67,30 +113,89 @@ class ProfileInformationScreen extends StatelessWidget {
                 border: Border.all(color: AppColors.kGrey1),
                 borderRadius: BorderRadius.circular(60),
               ),
-              child: selectedImage != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(60),
-                      child: Image.file(
-                        selectedImage,
-                        height: 70,
-                        width: 70,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : Center(
-                      child: AppImageWidget().svgImage(
-                        imageName: AppImages.personIcon,
-                        height: 70,
-                        width: 70,
-                      ),
-                    ),
+              child: context.read<AuthProvider>().isUpdateProfile == true
+                  ? buildUpdateProfileImage(context)
+                  :buildUpdateProfileImage(context)
+
+              /*(selectedImage != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(60),
+                            child: Image.file(
+                              selectedImage,
+                              height: 70,
+                              width: 70,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Center(
+                            child: AppImageWidget().svgImage(
+                              imageName: AppImages.personIcon,
+                              height: 70,
+                              width: 70,
+                            ),
+                          )),*/
             ),
             GestureDetector(
               onTap: () {
-                final provider= context.read<AuthProvider>();
-                showImagePickerBottomSheet(context, (file) {
-                 provider.changeImage(file);
-                });
+                final provider = context.read<AuthProvider>();
+                if (provider.isUpdateProfile == true) {
+                  showUploadOrDeleteProfilePictureBottomSheet(context, (
+                    v,
+                  ) async {
+                    if (v == true) {
+                      final cancel = BotToast.showLoading();
+                      try {
+                        bool? val = await provider.deleteProfilePhoto();
+                        if (val == true) {
+                          provider.getProfile(context);
+                          provider.updateProfile(true);
+                        }
+                        Navigator.pop(context);
+                      } catch (e) {
+                        print("Error--$e");
+                      } finally {
+                        cancel();
+                      }
+                    } else {
+                      showImagePickerBottomSheet(context, (file) async {
+                        final cancel = BotToast.showLoading();
+                        try {
+                          await provider.changeImage(file).then((c) async {
+                            await provider.getProfile(context);
+                            provider.updateProfile(true);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          });
+                        } catch (e) {
+                          print("Error--$e");
+                        } finally {
+                          cancel();
+                        }
+                      });
+                    }
+                  });
+                } else {
+
+                  final provider = context.read<AuthProvider>();
+                  showImagePickerBottomSheet(context, (file) async {
+                    final cancel = BotToast.showLoading();
+                    try {
+                      await  provider.changeImage(file).then((c)  async {
+                        await provider.getProfile(context);
+                        Navigator.pop(context);
+                      });
+                    } catch (e) {
+                      print("Error--$e");
+                    } finally {
+                      cancel();
+                    }
+                  });
+                  /*final cancel = BotToast.showLoading();
+
+                  showImagePickerBottomSheet(context, (file) {
+                    provider.changeImage(file);
+                  });*/
+                }
               },
               child: Container(
                 width: 37,
@@ -114,6 +219,28 @@ class ProfileInformationScreen extends StatelessWidget {
     );
   }
 
+  Widget buildUpdateProfileImage(BuildContext context) {
+    final GetProfileResponseModel? model = context
+        .select<AuthProvider, GetProfileResponseModel?>(
+          (p) => p.getProfileResponseModel,
+        );
+    print(
+      "model?.data!.customer!.profilePhoto--->${model?.data!.customer!.profilePhoto?.thumb}",
+    );
+    return model?.data!.customer!.profilePhoto == null
+        ? Center(
+            child: AppImageWidget().svgImage(
+              imageName: AppImages.personIcon,
+              height: 70,
+              width: 70,
+            ),
+          )
+        : AppImageWidget().customNetworkImage(
+            radius: 70,
+            image: model?.data?.customer!.profilePhoto!.thumb! ?? "",
+          );
+  }
+
   Widget buildName(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 25, bottom: 15),
@@ -128,7 +255,7 @@ class ProfileInformationScreen extends StatelessWidget {
             hintText: context.l10n.enterYourNameHere,
             keyboardType: TextInputType.name,
             validator: (v) {
-              if (isEmpty(v)) return null;
+              if (isEmpty(v?.trim())) return "Please enter name";
               return null;
             },
           ),
@@ -200,13 +327,14 @@ class ProfileInformationScreen extends StatelessWidget {
               selected: provider.gender == context.l10n.male,
               onTap: () => provider.selectGender(context.l10n.male),
             ),
-            const SizedBox(width: 20),
+
+            // const SizedBox(width: 20),
             CustomRadio(
               value: context.l10n.female,
               selected: provider.gender == context.l10n.female,
               onTap: () => provider.selectGender(context.l10n.female),
             ),
-            const SizedBox(width: 20),
+
             CustomRadio(
               value: context.l10n.other,
               selected: provider.gender == context.l10n.other,
@@ -233,55 +361,46 @@ class CustomRadio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          height: 48,
-          padding: EdgeInsets.symmetric(horizontal: 7),
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.kGrey1),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 20,
-                height: 20,
-                margin: const EdgeInsets.only(right: 10),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: selected
-                        ? AppColors.kPrimaryColor
-                        : AppColors.kGrey1,
-                    width: 2,
-                  ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        height: 48,
+        width: context.width / 3.6,
+        padding: EdgeInsets.symmetric(horizontal: 7),
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.kGrey1),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              margin: const EdgeInsets.only(right: 10),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: selected ? AppColors.kPrimaryColor : AppColors.kGrey1,
+                  width: 2,
                 ),
-                child: selected
-                    ? Center(
-                        child: Container(
-                          width: 10,
-                          height: 10,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.kPrimaryColor,
-                          ),
+              ),
+              child: selected
+                  ? Center(
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.kPrimaryColor,
                         ),
-                      )
-                    : null,
-              ),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: selected ? Colors.black : Colors.grey.shade700,
-                ),
-              ),
-            ],
-          ),
+                      ),
+                    )
+                  : null,
+            ),
+            Text(value, style: AppTextStyles.sf14kGreyW400TextStyle),
+          ],
         ),
       ),
     );

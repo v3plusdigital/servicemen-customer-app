@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:servicemen_customer_app/providers/auth_provider.dart';
 import 'package:servicemen_customer_app/providers/cart_provider.dart';
+import 'package:servicemen_customer_app/providers/dashboard_provider.dart';
 import 'package:servicemen_customer_app/providers/locale_provider.dart';
 import 'package:servicemen_customer_app/providers/location_provider.dart';
 import 'package:servicemen_customer_app/services/api/api_client.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:servicemen_customer_app/utils/app_routes.dart';
 import 'package:servicemen_customer_app/utils/l10n/app_localizations.dart';
+import 'package:servicemen_customer_app/utils/navigation_service.dart';
 
 
 void main() async{
@@ -33,24 +35,32 @@ class MyApp extends StatelessWidget {
          Provider(create: (_) => ApiClient()),
          Provider(create: (_) => SharedPrefService()),
          ChangeNotifierProvider(create: (_) => AuthProvider()),
-         ChangeNotifierProvider(create: (_) => LocaleProvider()),
+         ChangeNotifierProvider(create: (_) => LocaleProvider()..initializeLocale()),
          ChangeNotifierProvider(create: (_) => LocationProvider()),
          ChangeNotifierProvider(create: (_) => CartProvider()),
+         ChangeNotifierProvider(create: (_) => DashboardProvider()),
+
        ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        builder: BotToastInit(),
-        navigatorObservers: [
-          BotToastNavigatorObserver(),
-        ],
-        theme: ThemeData(
-            useMaterial3: true,
-            scaffoldBackgroundColor: AppColors.kWhite,
-            fontFamily: AppFonts.generalSans),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        initialRoute: AppRoutes.initialRoute(),
-        onGenerateRoute: AppRoutes.onGenerateRoute,
+      child: Consumer<LocaleProvider>(
+        builder: (context, localeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            builder: BotToastInit(),
+            navigatorObservers: [
+              BotToastNavigatorObserver(),
+            ],
+            navigatorKey: NavigationService.navigatorKey,
+            theme: ThemeData(
+                useMaterial3: true,
+                scaffoldBackgroundColor: AppColors.kWhite,
+                fontFamily: AppFonts.generalSans),
+            locale: localeProvider.locale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            initialRoute: AppRoutes.initialRoute(),
+            onGenerateRoute: AppRoutes.onGenerateRoute,
+          );
+        },
       ),
     );
   }

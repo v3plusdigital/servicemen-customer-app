@@ -1,15 +1,21 @@
+import 'package:flutter/cupertino.dart';
+
 class ApiResponse<T> {
   final int statusCode;
   final T? data;
   final String message;
   final bool success;
+  final ApiError? error;
 
   ApiResponse({
     required this.statusCode,
     this.data,
+    this.error,
     String? message,
   })  : success = statusCode >= 200 && statusCode < 300,
-        message = message ?? _defaultMessage(statusCode);
+        message = message ??
+            error?.message ??
+            _defaultMessage(statusCode);
 
   static String _defaultMessage(int code) {
     switch (code) {
@@ -28,5 +34,21 @@ class ApiResponse<T> {
       default:
         return "Something went wrong";
     }
+  }
+}
+class ApiError {
+  final String code;
+  final String message;
+
+  ApiError({
+    required this.code,
+    required this.message,
+  });
+
+  factory ApiError.fromJson(Map<String, dynamic> json) {
+    return ApiError(
+      code: json['code'] ?? '',
+      message: json['message'] ?? 'Something went wrong',
+    );
   }
 }

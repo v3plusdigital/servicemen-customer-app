@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:servicemen_customer_app/services/local_data/shared_pref_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefService {
@@ -11,8 +14,19 @@ class SharedPrefService {
     return pref.getString(key);
   }
 
+  Future<void> setBoolValue(String key, bool value) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setBool(key, value);
+  }
+
+  Future<bool?> getBoolValue(String key) async {
+    final pref = await SharedPreferences.getInstance();
+    return pref.getBool(key);
+  }
+
   Future<void> clear() async {
     final pref = await SharedPreferences.getInstance();
     await pref.clear();
+    await pref.setBool(SharedPrefKey.firstLaunch, false);
   }
 }

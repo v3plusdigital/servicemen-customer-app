@@ -37,7 +37,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get professionalsWithRatingsReviewsAndServiceHistory =>
-      'Professionals with ratings, reviews and service history.';
+      'रेटिंग, समीक्षा और सेवा इतिहास वाले पेशेवर।';
 
   @override
   String get start => 'शुरू करें';
@@ -130,7 +130,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get addAddress => 'पता जोड़ें';
 
   @override
-  String get houseFlatNo => 'घर / फ़्लैट नंबर';
+  String get houseFlatNo => 'घर नंबर';
 
   @override
   String get buildingSocietyName => 'बिल्डिंग / सोसायटी का नाम';
@@ -176,6 +176,9 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get saveContinue => 'सेव करें और जारी रखें';
+
+  @override
+  String get save => 'सेव करें';
 
   @override
   String get bookNow => 'अभी बुक करें';
@@ -351,10 +354,13 @@ class AppLocalizationsHi extends AppLocalizations {
       'तकनीशियन अपडेट आपकी स्वीकृति के लिए लंबित है।';
 
   @override
-  String get pleaseReviewToProceed => 'Please review to proceed.';
+  String get pleaseReviewToProceed => 'आगे बढ़ने के लिए समीक्षा करें।';
 
   @override
   String get technicianUpdate => 'तकनीशियन अपडेट';
+
+  @override
+  String get update => 'अपडेट';
 
   @override
   String get payForAdditionalWorkAmount => 'अतिरिक्त कार्य के लिए भुगतान करें';
@@ -430,4 +436,49 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get completedDate => 'पूर्ण होने की तिथि';
+
+  @override
+  String get changeDate => 'तिथि बदलें';
+
+  @override
+  String get addNoteForTechnicians => 'तकनीशियनों के लिए नोट जोड़ें';
+
+  @override
+  String get areYouSureYouWantToModifyThis =>
+      'क्या आप वाकई इसे संशोधित करना चाहते हैं?';
+
+  @override
+  String get date => 'तारीख';
+
+  @override
+  String get otherDetails => 'अन्य जानकारी';
+
+  @override
+  String get areYouSureYouWantToLogOut =>
+      'क्या आप वाकई लॉग आउट करना चाहते हैं?';
+
+  @override
+  String get areYouSureYouWantToDeleteThisAddress =>
+      'क्या आप वाकई इस पते को हटाना चाहते हैं?';
+
+  @override
+  String get deleteAddress => 'पता हटाएं';
+
+  @override
+  String get cancel => 'रद्द करें';
+
+  @override
+  String get delete => 'हटाएं';
+
+  @override
+  String get notifications => 'सूचनाएं';
+
+  @override
+  String get markAllAsRead => 'सभी को पढ़ा हुआ चिह्नित करें';
+
+  @override
+  String get noNotifications => 'अभी तक कोई सूचना नहीं';
+
+  @override
+  String get addToCart => 'कार्ट में जोड़ें';
 }

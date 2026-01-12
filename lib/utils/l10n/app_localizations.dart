@@ -331,7 +331,7 @@ abstract class AppLocalizations {
   /// No description provided for @houseFlatNo.
   ///
   /// In en, this message translates to:
-  /// **'House / Flat No'**
+  /// **'House No'**
   String get houseFlatNo;
 
   /// No description provided for @buildingSocietyName.
@@ -423,6 +423,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save & Continue'**
   String get saveContinue;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
 
   /// No description provided for @bookNow.
   ///
@@ -778,6 +784,12 @@ abstract class AppLocalizations {
   /// **'Technician Update'**
   String get technicianUpdate;
 
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
   /// No description provided for @payForAdditionalWorkAmount.
   ///
   /// In en, this message translates to:
@@ -921,6 +933,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Completed Date'**
   String get completedDate;
+
+  /// No description provided for @changeDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Date'**
+  String get changeDate;
+
+  /// No description provided for @addNoteForTechnicians.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Note for Technicians'**
+  String get addNoteForTechnicians;
+
+  /// No description provided for @areYouSureYouWantToModifyThis.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to modify this'**
+  String get areYouSureYouWantToModifyThis;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'date'**
+  String get date;
+
+  /// No description provided for @otherDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Other Details'**
+  String get otherDetails;
+
+  /// No description provided for @areYouSureYouWantToLogOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get areYouSureYouWantToLogOut;
+
+  /// No description provided for @areYouSureYouWantToDeleteThisAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this address?'**
+  String get areYouSureYouWantToDeleteThisAddress;
+
+  /// No description provided for @deleteAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Address'**
+  String get deleteAddress;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @markAllAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get markAllAsRead;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get noNotifications;
+
+  /// No description provided for @addToCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Add To Cart'**
+  String get addToCart;
 }
 
 class _AppLocalizationsDelegate

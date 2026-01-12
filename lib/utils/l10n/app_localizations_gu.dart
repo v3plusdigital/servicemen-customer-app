@@ -130,7 +130,7 @@ class AppLocalizationsGu extends AppLocalizations {
   String get addAddress => 'સરનામું ઉમેરો';
 
   @override
-  String get houseFlatNo => 'ઘર / ફ્લેટ નંબર';
+  String get houseFlatNo => 'ઘર નંબર';
 
   @override
   String get buildingSocietyName => 'બિલ્ડિંગ / સોસાયટી નામ';
@@ -176,6 +176,9 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get saveContinue => 'સેવ કરો અને ચાલુ રાખો';
+
+  @override
+  String get save => 'સેવ કરો';
 
   @override
   String get bookNow => 'હવે બુક કરો';
@@ -349,13 +352,16 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get technicianUpdatePendingYourApproval =>
-      'Technician update pending your approval.';
+      'ટેકનિશિયન અપડેટ તમારી મંજૂરી માટે બાકી છે.';
 
   @override
   String get pleaseReviewToProceed => 'આગળ વધવા માટે સમીક્ષા કરો.';
 
   @override
   String get technicianUpdate => 'ટેકનિશિયન અપડેટ';
+
+  @override
+  String get update => 'અપડેટ';
 
   @override
   String get payForAdditionalWorkAmount => 'વધારાના કામ માટે ચુકવણી કરો';
@@ -431,4 +437,49 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get completedDate => 'પૂર્ણ થયાની તારીખ';
+
+  @override
+  String get changeDate => 'તારીખ બદલો';
+
+  @override
+  String get addNoteForTechnicians => 'ટેકનિશિયન માટે નોંધ ઉમેરો';
+
+  @override
+  String get areYouSureYouWantToModifyThis =>
+      'શું તમે ખરેખર તેમાં ફેરફાર કરવા માંગો છો?';
+
+  @override
+  String get date => 'તારીખ';
+
+  @override
+  String get otherDetails => 'અન્ય વિગતો';
+
+  @override
+  String get areYouSureYouWantToLogOut =>
+      'શું તમે ખરેખર લૉગ આઉટ કરવા માંગો છો?';
+
+  @override
+  String get areYouSureYouWantToDeleteThisAddress =>
+      'શું તમે ખરેખર આ સરનામું કાઢી નાખવા માંગો છો?';
+
+  @override
+  String get deleteAddress => 'સરનામું કાઢી નાખો';
+
+  @override
+  String get cancel => 'રદ કરો';
+
+  @override
+  String get delete => 'કાઢી નાખો';
+
+  @override
+  String get notifications => 'સૂચનાઓ';
+
+  @override
+  String get markAllAsRead => 'બધાને વાંચ્યા તરીકે ચિહ્નિત કરો';
+
+  @override
+  String get noNotifications => 'હજુ સુધી કોઈ સૂચનાઓ નથી';
+
+  @override
+  String get addToCart => 'કાર્ટમાં ઉમેરો';
 }

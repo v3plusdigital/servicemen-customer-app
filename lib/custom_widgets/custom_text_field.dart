@@ -184,7 +184,8 @@ class CustomTextField extends StatelessWidget {
                     ),
                     borderRadius:
                         borderR ?? BorderRadius.circular(borderRadius),
-                  )),
+                  )
+        ),
       ),
     );
   }

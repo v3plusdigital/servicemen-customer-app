@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:servicemen_customer_app/custom_widgets/custom_button.dart';
+import 'package:servicemen_customer_app/providers/auth_provider.dart';
 import 'package:servicemen_customer_app/utils/app_routes.dart';
 import 'package:servicemen_customer_app/utils/app_textstyles.dart';
 import 'package:servicemen_customer_app/views/auth/widgets/onboarding_item_widget.dart';
@@ -128,6 +129,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                           onPressed: () {
                             if (p.currentIndex == p.onboardingData.length - 1) {
+                              context.read<AuthProvider>().setFirstLaunchFalse();
+
                               Navigator.pushNamedAndRemoveUntil(
                                 context,
                                 AppRoutes.login,

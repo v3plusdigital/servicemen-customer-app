@@ -130,7 +130,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addAddress => 'Add Address';
 
   @override
-  String get houseFlatNo => 'House / Flat No';
+  String get houseFlatNo => 'House No';
 
   @override
   String get buildingSocietyName => 'Building / Society Name';
@@ -176,6 +176,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveContinue => 'Save & Continue';
+
+  @override
+  String get save => 'Save';
 
   @override
   String get bookNow => 'Book Now';
@@ -359,6 +362,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get technicianUpdate => 'Technician Update';
 
   @override
+  String get update => 'Update';
+
+  @override
   String get payForAdditionalWorkAmount => 'Pay for additional work amount';
 
   @override
@@ -432,4 +438,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get completedDate => 'Completed Date';
+
+  @override
+  String get changeDate => 'Change Date';
+
+  @override
+  String get addNoteForTechnicians => 'Add Note for Technicians';
+
+  @override
+  String get areYouSureYouWantToModifyThis =>
+      'Are you sure you want to modify this';
+
+  @override
+  String get date => 'date';
+
+  @override
+  String get otherDetails => 'Other Details';
+
+  @override
+  String get areYouSureYouWantToLogOut => 'Are you sure you want to log out?';
+
+  @override
+  String get areYouSureYouWantToDeleteThisAddress =>
+      'Are you sure you want to delete this address?';
+
+  @override
+  String get deleteAddress => 'Delete Address';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get noNotifications => 'No notifications yet';
+
+  @override
+  String get addToCart => 'Add To Cart';
 }

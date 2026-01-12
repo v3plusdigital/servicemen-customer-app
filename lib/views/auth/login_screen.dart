@@ -22,6 +22,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Positioned.fill(
@@ -29,186 +30,189 @@ class LoginScreen extends StatelessWidget {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15.0,
-                vertical: 20,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
               child: Column(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset(AppImages.logoImage, height: 180),
+
                   Expanded(
-                    flex: 1,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                    child: ListView(
                       children: [
-                        Text(
-                          context.l10n.welcomeBack,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.sf20kBlackSemiboldTextStyle,
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          context
-                              .l10n
-                              .yourHomeServiceExperienceStartsHereLogInEasilyWithYourMobileNumber,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.sf16kGreyW400TextStyle,
-                        ),
-                        SizedBox(height: 25),
-                        Align(
-                          alignment: AlignmentGeometry.centerLeft,
-                          child: Text(
-                            context.l10n.phoneNumber,
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.sf16kBlackW400TextStyle,
-                          ),
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8, bottom: 15),
-                          child: CustomTextField(
-                            fillColor: AppColors.kWhite,
-                            controller: context
-                                .read<AuthProvider>()
-                                .loginPhoneNumberController,
-                            prefixIcon: AppImageWidget().svgImage(
-                              imageName: AppImages.indianFlagIcon,
-                            ),
-                            hintText: '00000-00000',
-                            keyboardType: TextInputType.phone,
-                            inputFormatters: [PhoneFormatter()],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 15, bottom: 20),
-                          child: GradientButton(
-                            child: Text(
-                              context.l10n.logIn,
-                              style: AppTextStyles.sf16kWhiteMediumTextStyle,
-                            ),
-                            onPressed: () async {
-                              final provider = context.read<AuthProvider>();
-
-                              final cancel = BotToast.showLoading();
-
-                              final success = await provider.requestOtp();
-
-                              cancel(); // ALWAYS close loading
-
-                              if (success) {
-                                Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.otpVerification,
-                                );
-                              } else {
-                                BotToast.showText(
-                                  text: provider.errorMessage ?? "Error",
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                        Row(
+                        Image.asset(AppImages.logoImage, height: 180),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Flexible(
-                              flex: 2,
-                              child: Container(
-                                height: 1,
-                                color: AppColors.kGrey1,
-                              ),
-                            ),
                             Text(
-                              context.l10n.orLogInWith,
-                              style: AppTextStyles.sf14kGreyW400TextStyle,
+                              context.l10n.welcomeBack,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.sf20kBlackSemiboldTextStyle,
                             ),
-                            Flexible(
-                              flex: 2,
-                              child: Container(
-                                height: 1,
-                                color: AppColors.kGrey1,
-                              ),
+                            SizedBox(height: 8),
+                            Text(
+                              context
+                                  .l10n
+                                  .yourHomeServiceExperienceStartsHereLogInEasilyWithYourMobileNumber,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.sf16kGreyW400TextStyle,
                             ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CustomOutlineButton(
-                              height: 50,
-                              borderRadius: BorderRadius.circular(8),
-                              child: AppImageWidget().svgImage(
-                                imageName: AppImages.googleIcon,
+                            SizedBox(height: 25),
+                            Align(
+                              alignment: AlignmentGeometry.centerLeft,
+                              child: Text(
+                                context.l10n.phoneNumber,
+                                textAlign: TextAlign.center,
+                                style: AppTextStyles.sf16kBlackW400TextStyle,
                               ),
-                              onPressed: () {},
                             ),
 
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              child: CustomOutlineButton(
-                                height: 50,
-                                borderRadius: BorderRadius.circular(8),
-                                child: AppImageWidget().svgImage(
-                                  imageName: AppImages.fbIcon,
+                              padding: const EdgeInsets.only(top: 8, bottom: 15),
+                              child: CustomTextField(
+                                fillColor: AppColors.kWhite,
+                                controller: context
+                                    .read<AuthProvider>()
+                                    .loginPhoneNumberController,
+                                prefixIcon: AppImageWidget().svgImage(
+                                  imageName: AppImages.indianFlagIcon,
                                 ),
-                                onPressed: () {},
+                                hintText: '00000-00000',
+                                keyboardType: TextInputType.phone,
+                                inputFormatters: [PhoneFormatter()],
                               ),
                             ),
-                            CustomOutlineButton(
-                              height: 50,
-                              borderRadius: BorderRadius.circular(8),
-                              child: AppImageWidget().svgImage(
-                                imageName: AppImages.emailIcon,
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15, bottom: 20),
+                              child: GradientButton(
+                                child: Text(
+                                  context.l10n.logIn,
+                                  style: AppTextStyles.sf16kWhiteMediumTextStyle,
+                                ),
+                                onPressed: () async {
+                                  final provider = context.read<AuthProvider>();
+
+                                  final cancel = BotToast.showLoading();
+
+                                  final success = await provider.requestOtp();
+
+                                  cancel(); // ALWAYS close loading
+
+                                  if (success) {
+                                    Navigator.pushNamed(
+                                      context,
+                                      AppRoutes.otpVerification,
+                                    );
+                                  } else {
+                                    BotToast.showText(
+                                      text: provider.errorMessage ?? "Error",
+                                    );
+                                  }
+                                },
                               ),
-                              onPressed: () {},
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                  flex: 2,
+                                  child: Container(
+                                    height: 1,
+                                    color: AppColors.kGrey1,
+                                  ),
+                                ),
+                                Text(
+                                  context.l10n.orLogInWith,
+                                  style: AppTextStyles.sf14kGreyW400TextStyle,
+                                ),
+                                Flexible(
+                                  flex: 2,
+                                  child: Container(
+                                    height: 1,
+                                    color: AppColors.kGrey1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CustomOutlineButton(
+                                  height: 50,
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: AppImageWidget().svgImage(
+                                    imageName: AppImages.googleIcon,
+                                  ),
+                                  onPressed: () {},
+                                ),
+
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  child: CustomOutlineButton(
+                                    height: 50,
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: AppImageWidget().svgImage(
+                                      imageName: AppImages.fbIcon,
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                ),
+                                CustomOutlineButton(
+                                  height: 50,
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: AppImageWidget().svgImage(
+                                    imageName: AppImages.emailIcon,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ],
                     ),
                   ),
-                  Align(
-                    alignment: AlignmentGeometry.bottomCenter,
-                    child: Text(
-                      context.l10n.byLoggingInYouAgreeToOur,
-                      style: AppTextStyles.sf14kGreyW400TextStyle,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: context.l10n.termsConditions,
-                          recognizer: TapGestureRecognizer()..onTap = () {},
-                          style: AppTextStyles.sf14kPrimaryW400TextStyle
-                              .copyWith(decoration: TextDecoration.underline),
+
+                  Column(
+                    children: [
+                      Text(
+                        context.l10n.byLoggingInYouAgreeToOur,
+                        style: AppTextStyles.sf14kGreyW400TextStyle,
+                      ),
+                      SizedBox(height: 5),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: context.l10n.termsConditions,
+                              recognizer: TapGestureRecognizer()..onTap = () {},
+                              style: AppTextStyles.sf14kPrimaryW400TextStyle
+                                  .copyWith(decoration: TextDecoration.underline),
+                            ),
+                            TextSpan(
+                              text: "  |  ",
+                              style: AppTextStyles.sf14kGrey1W400TextStyle,
+                            ),
+                            TextSpan(
+                              text: context.l10n.privacyPolicy,
+                              recognizer: TapGestureRecognizer()..onTap = () {},
+                              style: AppTextStyles.sf14kPrimaryW400TextStyle
+                                  .copyWith(decoration: TextDecoration.underline),
+                            ),
+                            TextSpan(
+                              text: " | ",
+                              style: AppTextStyles.sf14kGrey1W400TextStyle,
+                            ),
+                            TextSpan(
+                              text: context.l10n.refundPolicy,
+                              recognizer: TapGestureRecognizer()..onTap = () {},
+                              style: AppTextStyles.sf14kPrimaryW400TextStyle
+                                  .copyWith(decoration: TextDecoration.underline),
+                            ),
+                          ],
                         ),
-                        TextSpan(
-                          text: "  |  ",
-                          style: AppTextStyles.sf14kGrey1W400TextStyle,
-                        ),
-                        TextSpan(
-                          text: context.l10n.privacyPolicy,
-                          recognizer: TapGestureRecognizer()..onTap = () {},
-                          style: AppTextStyles.sf14kPrimaryW400TextStyle
-                              .copyWith(decoration: TextDecoration.underline),
-                        ),
-                        TextSpan(
-                          text: " | ",
-                          style: AppTextStyles.sf14kGrey1W400TextStyle,
-                        ),
-                        TextSpan(
-                          text: context.l10n.refundPolicy,
-                          recognizer: TapGestureRecognizer()..onTap = () {},
-                          style: AppTextStyles.sf14kPrimaryW400TextStyle
-                              .copyWith(decoration: TextDecoration.underline),
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    ],
+                  )
+
                 ],
               ),
             ),

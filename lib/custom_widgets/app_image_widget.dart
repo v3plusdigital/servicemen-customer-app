@@ -24,6 +24,9 @@ class AppImageWidget {
     required double radius,
     Color? borderColor,
     double? borderWidth,
+    bool? boxFit,
+    BoxFit? boxFitVal,
+    AlignmentGeometry? alignment,
     required String image,
     double? height,
     double? width,
@@ -42,7 +45,7 @@ class AppImageWidget {
               borderRadius: BorderRadius.circular(radius),
               child: Image.network(
                 image,
-                fit: BoxFit.cover,
+                fit: boxFit == false ? null : BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress != null) {
                     return Center(
@@ -61,7 +64,11 @@ class AppImageWidget {
             )
           : ClipRRect(
               borderRadius: BorderRadius.circular(radius),
-              child: Image.asset(image, fit: BoxFit.cover),
+              child: Image.asset(image,
+                  fit: boxFitVal??BoxFit.cover, // 🔥 THIS IS THE FIX
+                  alignment:alignment??Alignment.center,
+
+              ),
             ),
     );
   }

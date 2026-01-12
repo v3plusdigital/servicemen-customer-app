@@ -98,7 +98,7 @@ class BookingProvider extends ChangeNotifier {
       cancelledDate: DateTime.now(),
       completedDate: DateTime.now(),
       status: BookingTabStatus.cancelled,
-      bookingStatus: BookingStatus.completed,
+      bookingStatus: BookingStatus.cancelled,
     ),
   ];
 

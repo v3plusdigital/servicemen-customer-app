@@ -6,6 +6,8 @@ import 'package:servicemen_customer_app/custom_widgets/custom_appbar.dart';
 import 'package:servicemen_customer_app/utils/app_colors.dart';
 import 'package:servicemen_customer_app/utils/app_images.dart';
 import 'package:servicemen_customer_app/views/bookings/widgets/booking_card_widget.dart';
+import 'package:servicemen_customer_app/views/bookings/widgets/cancel_booking_widget.dart';
+import 'package:servicemen_customer_app/views/bookings/widgets/modify_booking_widget.dart';
 import 'package:servicemen_customer_app/views/bookings/widgets/status_chip_widget.dart';
 
 import '../../custom_widgets/custom_button.dart';
@@ -46,8 +48,12 @@ class BookingDetailsScreen extends StatelessWidget {
                   bookingDetail: true,
                 ),
                 const SizedBox(height: 25),
+
                 Text(
-                  context.l10n.addedProblemDescriptions,
+                  booking.bookingStatus.name.toString() ==
+                          BookingStatus.pending.name.toString()
+                      ? context.l10n.addReasonForCancellation
+                      : context.l10n.addedProblemDescriptions,
                   style: AppTextStyles.sf16kBlackW600TextStyle,
                 ),
                 Text(
@@ -55,7 +61,19 @@ class BookingDetailsScreen extends StatelessWidget {
                   style: AppTextStyles.sf16kGreyW400TextStyle,
                 ),
                 const SizedBox(height: 25),
-                TrackStatusWidget(status: booking.bookingStatus),
+                booking.bookingStatus.name.toString() ==
+                    BookingStatus.pending.name.toString()?Column(
+                  children: [
+                    Text(
+                     context.l10n.notes,
+                      style: AppTextStyles.sf16kGreyW400TextStyle,
+                    ),
+                    Text(
+                      "Lorem ipsum dolor sit amet consectetur. Cras fusce habitasse viverra aliquam. Ac in elementum gravida vitae placerat quisque.",
+                      style: AppTextStyles.sf16kGreyW400TextStyle,
+                    ),
+                  ],
+                ): TrackStatusWidget(status: booking.bookingStatus),
               ],
             ),
           ),
@@ -95,7 +113,13 @@ class BookingDetailsScreen extends StatelessWidget {
                         context.l10n.cancelBooking,
                         style: AppTextStyles.sf14kRedW500TextStyle,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        openModifyBookingSheet(
+                          context,
+                          booking,
+                          CancelBookingWidget(booking: booking),
+                        );
+                      },
                     ),
                   ),
                   SizedBox(
@@ -107,7 +131,13 @@ class BookingDetailsScreen extends StatelessWidget {
                         context.l10n.modifyBooking,
                         style: AppTextStyles.sf16kWhiteMediumTextStyle,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        openModifyBookingSheet(
+                          context,
+                          booking,
+                          ModifyBookingWidget(booking: booking),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -117,6 +147,22 @@ class BookingDetailsScreen extends StatelessWidget {
         : Container(height: 1);
   }
 
+  void openModifyBookingSheet(
+    BuildContext context,
+    Booking booking,
+    Widget openSheet,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.kWhite,
+      builder: (_) => StatefulBuilder(
+        builder: (context, setState) {
+          return openSheet;
+        },
+      ),
+    );
+  }
 }
 
 class TrackStatusWidget extends StatelessWidget {
@@ -135,7 +181,7 @@ class TrackStatusWidget extends StatelessWidget {
         ),
         const SizedBox(height: 20),
 
-        _row(context.l10n.pending,context, isDone: true, showLine: true),
+        _row(context.l10n.pending, context, isDone: true, showLine: true),
         _row(
           context.l10n.assigned,
           context,
@@ -158,13 +204,22 @@ class TrackStatusWidget extends StatelessWidget {
     );
   }
 
-  Widget _row(String text, BuildContext context,{required bool isDone, required bool showLine}) {
+  Widget _row(
+    String text,
+    BuildContext context, {
+    required bool isDone,
+    required bool showLine,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Column(
           children: [
-            isDone ? (context.l10n.inProgress==text?_dashedCircle(isProgress: true): _doneCircle() ): _dashedCircle(),
+            isDone
+                ? (context.l10n.inProgress == text
+                      ? _dashedCircle(isProgress: true)
+                      : _doneCircle())
+                : _dashedCircle(),
             if (showLine)
               Container(
                 height: 30,
@@ -174,34 +229,37 @@ class TrackStatusWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(width: 16),
-    /*    context.l10n.inProgress==text?Column(
-          children: [
-           Text(text, style: AppTextStyles.sf16kBlackW400TextStyle),
-            Expanded(
-                child:
-            RichText(text: TextSpan(
-                children: [
-                  TextSpan(
-                      text: context.l10n.technicianUpdatePendingYourApproval,
-                      style: AppTextStyles.sf14kGreyW400TextStyle
-                  ),
-                  TextSpan(
-                    text: context.l10n.pleaseReviewToProceed,
-                    recognizer: TapGestureRecognizer()..onTap = () {},
-                    style: AppTextStyles.sf14kPrimaryW400TextStyle
-                        .copyWith(decoration: TextDecoration.underline),
-                  ),
-
-                ],
+        context.l10n.inProgress == text
+            ? Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(text, style: AppTextStyles.sf16kBlackW400TextStyle),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: context
+                                .l10n
+                                .technicianUpdatePendingYourApproval,
+                            style: AppTextStyles.sf14kGreyW400TextStyle,
+                          ),
+                          TextSpan(
+                            text: context.l10n.pleaseReviewToProceed,
+                            recognizer: TapGestureRecognizer()..onTap = () {},
+                            style: AppTextStyles.sf14kPrimaryW400TextStyle
+                                .copyWith(decoration: TextDecoration.underline),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(text, style: AppTextStyles.sf16kBlackW400TextStyle),
               ),
-            ) )
-
-          ],
-        ):*/
-        Padding(
-          padding: const EdgeInsets.only(top: 6),
-          child: Text(text, style: AppTextStyles.sf16kBlackW400TextStyle),
-        ),
       ],
     );
   }
@@ -244,7 +302,9 @@ class TrackStatusWidget extends StatelessWidget {
       height: 40,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color:isProgress==true?AppColors.kOrange: AppColors.kGrey1),
+        border: Border.all(
+          color: isProgress == true ? AppColors.kOrange : AppColors.kGrey1,
+        ),
       ),
       child: Center(
         child: SizedBox(
@@ -260,8 +320,6 @@ class TrackStatusWidget extends StatelessWidget {
       ),
     );
   }
-
-
 }
 
 class DashedCirclePainter extends CustomPainter {
@@ -272,7 +330,7 @@ class DashedCirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color =isProgress==true?AppColors.kOrange: AppColors.kGrey1
+      ..color = isProgress == true ? AppColors.kOrange : AppColors.kGrey1
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 

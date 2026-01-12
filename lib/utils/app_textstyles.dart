@@ -118,6 +118,10 @@ class AppTextStyles {
     fontSize: 12,
     color: AppColors.kRed,
   );
+  static const sf16kRedW400TextStyle = TextStyle(
+    fontSize: 16,
+    color: AppColors.kRed,
+  );
 
   ///sky
   static const sf12kSkyW400TextStyle = TextStyle(

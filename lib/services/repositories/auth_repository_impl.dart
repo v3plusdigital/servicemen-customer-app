@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:servicemen_customer_app/models/create_profile_model.dart';
 import 'package:servicemen_customer_app/services/api/api_endpoints.dart';
 
@@ -22,9 +24,13 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> logout() async {
-    await pref.clear();
-    api.updateHeader(token: null);
+  Future<ApiResponse> logout(String refreshToken) async {
+
+    final response = await api.post(
+      ApiEndPoints.baseUrl + ApiEndPoints.logout,
+      {"refresh_token":refreshToken},
+    );
+    return response;
   }
 
   @override
@@ -42,21 +48,57 @@ class AuthRepositoryImpl implements AuthRepository {
       ApiEndPoints.baseUrl + ApiEndPoints.verifyOtp,
       {"phone": phoneNumber, "otp": otp},
     );
-
-
     return response;
   }
 
   @override
-  Future<ApiResponse> createProfile(
-      {required ProfileCreateRequest profileRequest,  required List<MultipartBody> multipartBody}) async {
-    final response = await api.multipart(
+  Future<ApiResponse> createProfile({
+    required ProfileCreateRequest profileRequest,
+  }) async {
+    final response = await api.post(
       ApiEndPoints.baseUrl + ApiEndPoints.createProfile,
       profileRequest.toFields(),
-      multipartBody
+      // multipartBody,
     );
+    return response;
+  }
 
+  @override
+  Future<ApiResponse> uploadProfilePhoto({required File profileFile}) async {
+    final response = await api.multipart(
+      ApiEndPoints.baseUrl + ApiEndPoints.uploadPhoto,
+      {},
+      [MultipartBody('photo', profileFile)],
+    );
+    return response;
+  }
 
+  @override
+  Future<ApiResponse> getProfile() async {
+    final response = await api.get(
+      ApiEndPoints.baseUrl + ApiEndPoints.getProfile,
+    );
+    return response;
+  }
+
+  @override
+  Future<ApiResponse> updateProfile({required ProfileCreateRequest profileRequest})
+    async {
+      final response = await api.post(
+        ApiEndPoints.baseUrl + ApiEndPoints.updateProfile,
+        profileRequest.toFields(),
+        // multipartBody,
+      );
+      return response;
+    }
+
+  @override
+  Future<ApiResponse> deleteProfilePhoto() async {
+    final response = await api.post(
+      ApiEndPoints.baseUrl + ApiEndPoints.deleteProfilePhoto,
+        {}
+      // multipartBody,
+    );
     return response;
   }
 }
